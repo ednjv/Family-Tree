@@ -57,10 +57,12 @@ function parseFTT(text) {
                 ? dy + '-' + (dm && dm !== '0' ? dm.padStart(2, '0') : '01') + '-' + (dd && dd !== '0' ? dd.padStart(2, '0') : '01')
                 : null;
 
+            const sexFlag = cols[24] ? cols[24].trim() : '';
             tInd.push({
                 id:              cols[0],
                 nombres:         cols[13] ? cols[13].trim() : '',
                 apellidos:       cols[12] ? cols[12].trim() : '',
+                sex:             sexFlag === '1' ? 'M' : sexFlag === '2' ? 'F' : 'U',
                 fechaNacimiento: dob,
                 fechaDefuncion:  dod,
                 familyOfOrigin:  cols[2] !== '0' ? cols[2] : null,

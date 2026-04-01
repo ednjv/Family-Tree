@@ -63,6 +63,14 @@
             <input type="hidden" id="member-id">
             <div class="input-field"><input id="first-names" type="text" required><label for="first-names">Nombres</label></div>
             <div class="input-field"><input id="last-names"  type="text" required><label for="last-names">Apellidos</label></div>
+            <div class="input-field">
+              <select id="person-sex">
+                <option value="U" selected>No especificado</option>
+                <option value="M">Masculino</option>
+                <option value="F">Femenino</option>
+              </select>
+              <label>Sexo (SEX)</label>
+            </div>
             <div class="input-field"><input id="birth-date"  type="date"><label for="birth-date" class="active">Nacimiento (BIRT)</label></div>
             <div class="switch" style="margin-bottom:1rem;">
               <label>Fallecido <input type="checkbox" id="is-alive" checked><span class="lever"></span> Vivo</label>

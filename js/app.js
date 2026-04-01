@@ -149,9 +149,20 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('family-form').reset();
         document.getElementById('form-title').innerText  = 'Registrar Persona';
         document.getElementById('member-id').value       = '';
-        this.style.display       = 'none';
-        isAliveSwitch.checked    = true;
+        this.style.display           = 'none';
+        isAliveSwitch.checked        = true;
         deathContainer.style.display = 'none';
+        M.FormSelect.init(document.getElementById('person-sex'));
+        // Reset relation form selects back to defaults
+        const selChild = document.getElementById('select-child');
+        const selP1    = document.getElementById('select-parent1');
+        const selP2    = document.getElementById('select-parent2');
+        selChild.selectedIndex = 0;
+        selP1.selectedIndex    = 0;
+        selP2.selectedIndex    = 0;
+        M.FormSelect.init(selChild);
+        M.FormSelect.init(selP1);
+        M.FormSelect.init(selP2);
     });
 
     /* --- Add / edit person form ----------------------- */
@@ -163,6 +174,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const data = {
                 nombres:         document.getElementById('first-names').value,
                 apellidos:       document.getElementById('last-names').value,
+                sex:             document.getElementById('person-sex').value,
                 fechaNacimiento: document.getElementById('birth-date').value,
                 vivo:            isAliveSwitch.checked,
                 fechaDefuncion:  isAliveSwitch.checked ? null : document.getElementById('death-date').value

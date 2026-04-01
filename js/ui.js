@@ -27,25 +27,47 @@ function logDebug(msg, type = 'info') {
 
 /* --- Form management ---------------------------------- */
 
-// Populates the edit form with an existing person's data.
+// Populates both forms (personal data + family links) for editing an existing person.
 function loadToForm(id) {
     const p = getPerson(id);
     if (!p) return;
 
+    // --- Personal data form ---
     document.getElementById('form-title').innerText   = 'Editar Persona';
     document.getElementById('member-id').value        = p.id;
     document.getElementById('first-names').value      = p.nombres;
     document.getElementById('last-names').value       = p.apellidos;
+    document.getElementById('person-sex').value       = p.sex || 'U';
     document.getElementById('birth-date').value       = p.fechaNacimiento || '';
     document.getElementById('death-date').value       = p.fechaDefuncion  || '';
 
     const isAliveSwitch  = document.getElementById('is-alive');
     const deathContainer = document.getElementById('death-date-container');
-    isAliveSwitch.checked          = (p.vivo !== false);
-    deathContainer.style.display   = isAliveSwitch.checked ? 'none' : 'block';
+    isAliveSwitch.checked        = (p.vivo !== false);
+    deathContainer.style.display = isAliveSwitch.checked ? 'none' : 'block';
 
     document.getElementById('btn-cancel-edit').style.display = 'inline-block';
     M.updateTextFields();
+    M.FormSelect.init(document.getElementById('person-sex'));
+
+    // --- Family links form (pre-select child + parents from familyOfOrigin) ---
+    const selChild = document.getElementById('select-child');
+    const selP1    = document.getElementById('select-parent1');
+    const selP2    = document.getElementById('select-parent2');
+
+    selChild.value = id;
+    if (p.familyOfOrigin) {
+        const fam  = db.families.find(f => f.id === p.familyOfOrigin);
+        selP1.value = (fam && fam.parent1Id) ? fam.parent1Id : '';
+        selP2.value = (fam && fam.parent2Id) ? fam.parent2Id : '';
+    } else {
+        selP1.value = '';
+        selP2.value = '';
+    }
+    M.FormSelect.init(selChild);
+    M.FormSelect.init(selP1);
+    M.FormSelect.init(selP2);
+
     M.toast({ html: 'Cargado para editar' });
 }
 

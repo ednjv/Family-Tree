@@ -9,15 +9,16 @@
 //   [2]  familyOfOrigin (0 = none)
 //   [12] apellidos
 //   [13] nombres
-//   [17] birth flag  (128 = known date, 2 = unknown)
-//   [18] birth year
-//   [19] birth month
-//   [20] birth day
-//   [21] death flag  (128 = known date, 2 = unknown)
-//   [22] death year
-//   [23] death month
-//   [24] death day
-//   [25] sex (1 = M, 2 = F)
+//   [14-15] empty
+//   [16] birth flag  (128 = known date, 2 = unknown)
+//   [17] birth year
+//   [18] birth month
+//   [19] birth day
+//   [20] death flag  (128 = known date, 2 = unknown)
+//   [21] death year
+//   [22] death month
+//   [23] death day
+//   [24] sex (1 = M, 2 = F)
 //
 // FTT column layout (family rows, 5 <= cols.length < 20):
 //   [0]  family id
@@ -46,12 +47,12 @@ function parseFTT(text) {
 
         // Individual row
         if (cols.length >= 20 && !isNaN(parseInt(cols[0])) && (cols[12] || cols[13])) {
-            const by = cols[18], bm = cols[19], bd = cols[20];
+            const by = cols[17], bm = cols[18], bd = cols[19];
             const dob = (by && by !== '0')
                 ? by + '-' + (bm && bm !== '0' ? bm.padStart(2, '0') : '01') + '-' + (bd && bd !== '0' ? bd.padStart(2, '0') : '01')
                 : null;
 
-            const dy = cols[22], dm = cols[23], dd = cols[24];
+            const dy = cols[21], dm = cols[22], dd = cols[23];
             const dod = (dy && dy !== '0')
                 ? dy + '-' + (dm && dm !== '0' ? dm.padStart(2, '0') : '01') + '-' + (dd && dd !== '0' ? dd.padStart(2, '0') : '01')
                 : null;

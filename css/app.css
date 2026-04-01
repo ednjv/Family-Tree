@@ -51,11 +51,48 @@ main { flex: 1 0 auto; }
    ========================================================= */
 
 .tree-wrapper {
-  text-align: center; overflow: auto; padding: 10px; min-height: 500px;
+  overflow: hidden; padding: 0; min-height: 500px;
   background-color: #fcfcfc; border-radius: 8px; border: 1px solid #eee;
   position: relative; cursor: grab;
 }
 .tree-wrapper:active { cursor: grabbing; }
+
+/* Pan/zoom container — transformed by app.js */
+#tree-inner {
+  display: block;
+  min-width: 100%;
+  padding: 20px;
+  text-align: center;
+  transform-origin: 0 0;
+  will-change: transform;
+  user-select: none;
+}
+
+/* Floating canvas control buttons (zoom +/- and center) */
+.tree-canvas-controls {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 20;
+}
+.tree-ctrl-btn {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: white;
+  border: 1px solid #cfd8dc;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: #5D4037;
+  transition: background 0.15s, transform 0.1s;
+  padding: 0;
+}
+.tree-ctrl-btn:hover  { background: #efebe9; }
+.tree-ctrl-btn:active { transform: scale(0.92); }
+.tree-ctrl-btn i { font-size: 1.1rem; pointer-events: none; }
 
 /* Config bar above the tree */
 .tree-config-bar {

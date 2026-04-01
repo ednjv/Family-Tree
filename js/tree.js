@@ -96,10 +96,15 @@ function buildDescendantsNode(person, currentDepth, isRoot) {
 function renderTree(focusId) {
     const focusPerson = getPerson(focusId);
     if (!focusPerson) return;
+
+    const isNewFocus = focusId !== currentFocusId;
     currentFocusId = focusId;
 
     document.getElementById('tree-placeholder').style.display = 'none';
     document.getElementById('tree-canvas').style.display = 'block';
+
+    // Reset pan/zoom when switching focus so the new root is always visible
+    if (isNewFocus && typeof window.resetPanZoom === 'function') window.resetPanZoom();
 
     // Ancestors (hourglass top — upward CSS tree)
     const ancestorsCanvas = document.getElementById('ancestors-canvas');

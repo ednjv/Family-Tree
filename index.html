@@ -134,8 +134,17 @@
 
           <!-- Tree canvas -->
           <div class="tree-wrapper" id="tree-canvas" style="display:none;">
-            <div id="ancestors-canvas"   class="css-tree-up"></div>
-            <div id="descendants-canvas" class="css-tree-down"></div>
+            <!-- Pan/zoom transform target -->
+            <div id="tree-inner">
+              <div id="ancestors-canvas"   class="css-tree-up"></div>
+              <div id="descendants-canvas" class="css-tree-down"></div>
+            </div>
+            <!-- Canvas controls (zoom + center) -->
+            <div class="tree-canvas-controls">
+              <button class="tree-ctrl-btn" id="btn-zoom-in"  title="Acercar"><i class="material-icons">add</i></button>
+              <button class="tree-ctrl-btn" id="btn-zoom-out" title="Alejar"><i class="material-icons">remove</i></button>
+              <button class="tree-ctrl-btn" id="btn-center"   title="Centrar en persona enfocada"><i class="material-icons">filter_center_focus</i></button>
+            </div>
           </div>
 
           <!-- Hidden file input -->

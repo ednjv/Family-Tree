@@ -23,18 +23,118 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('config-desc').addEventListener('change', saveTreeConfig);
     document.getElementById('config-spouses').addEventListener('change', saveTreeConfig);
 
-    /* --- Drag-to-pan on the tree canvas --------------- */
-    const slider = document.getElementById('tree-canvas');
-    let isDown = false, startX, scrollLeft;
-    slider.addEventListener('mousedown',  e  => { isDown = true; startX = e.pageX - slider.offsetLeft; scrollLeft = slider.scrollLeft; });
-    slider.addEventListener('mouseleave', () => { isDown = false; });
-    slider.addEventListener('mouseup',    () => { isDown = false; });
-    slider.addEventListener('mousemove',  e  => {
-        if (!isDown) return;
-        e.preventDefault();
-        const walk = (e.pageX - slider.offsetLeft - startX) * 2;
-        slider.scrollLeft = scrollLeft - walk;
+    /* --- Pan + Zoom on the tree canvas ---------------- */
+    const treeCanvas = document.getElementById('tree-canvas');
+    const treeInner  = document.getElementById('tree-inner');
+    const MIN_ZOOM = 0.15, MAX_ZOOM = 3;
+    let panX = 0, panY = 0, zoom = 1;
+    let isPanning = false, panStartX, panStartY;
+
+    function applyTransform() {
+        treeInner.style.transform = `translate(${panX}px, ${panY}px) scale(${zoom})`;
+    }
+
+    // Exposed globally so renderTree() in tree.js can reset on focus change
+    window.resetPanZoom = function () {
+        panX = 0; panY = 0; zoom = 1;
+        applyTransform();
+    };
+
+    // Mouse drag
+    treeCanvas.addEventListener('mousedown', e => {
+        if (e.button !== 0) return;
+        isPanning = true;
+        panStartX = e.clientX - panX;
+        panStartY = e.clientY - panY;
+        treeCanvas.style.cursor = 'grabbing';
     });
+    window.addEventListener('mouseup', () => {
+        if (!isPanning) return;
+        isPanning = false;
+        treeCanvas.style.cursor = 'grab';
+    });
+    window.addEventListener('mousemove', e => {
+        if (!isPanning) return;
+        panX = e.clientX - panStartX;
+        panY = e.clientY - panStartY;
+        applyTransform();
+    });
+
+    // Wheel zoom (zooms toward cursor position)
+    treeCanvas.addEventListener('wheel', e => {
+        e.preventDefault();
+        const rect     = treeCanvas.getBoundingClientRect();
+        const mouseX   = e.clientX - rect.left;
+        const mouseY   = e.clientY - rect.top;
+        const factor   = e.deltaY < 0 ? 1.12 : 1 / 1.12;
+        const newZoom  = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, zoom * factor));
+        // Adjust pan so the content point under the cursor stays fixed
+        panX = mouseX - (mouseX - panX) * (newZoom / zoom);
+        panY = mouseY - (mouseY - panY) * (newZoom / zoom);
+        zoom = newZoom;
+        applyTransform();
+    }, { passive: false });
+
+    // Touch: single-finger pan, two-finger pinch-zoom
+    let lastTouchDist = null;
+    treeCanvas.addEventListener('touchstart', e => {
+        if (e.touches.length === 1) {
+            isPanning = true;
+            panStartX = e.touches[0].clientX - panX;
+            panStartY = e.touches[0].clientY - panY;
+        } else if (e.touches.length === 2) {
+            isPanning = false;
+            lastTouchDist = Math.hypot(
+                e.touches[0].clientX - e.touches[1].clientX,
+                e.touches[0].clientY - e.touches[1].clientY
+            );
+        }
+    }, { passive: true });
+    treeCanvas.addEventListener('touchmove', e => {
+        e.preventDefault();
+        if (e.touches.length === 1 && isPanning) {
+            panX = e.touches[0].clientX - panStartX;
+            panY = e.touches[0].clientY - panStartY;
+            applyTransform();
+        } else if (e.touches.length === 2 && lastTouchDist) {
+            const dist    = Math.hypot(
+                e.touches[0].clientX - e.touches[1].clientX,
+                e.touches[0].clientY - e.touches[1].clientY
+            );
+            const rect    = treeCanvas.getBoundingClientRect();
+            const midX    = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left;
+            const midY    = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top;
+            const newZoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, zoom * dist / lastTouchDist));
+            panX = midX - (midX - panX) * (newZoom / zoom);
+            panY = midY - (midY - panY) * (newZoom / zoom);
+            zoom = newZoom;
+            lastTouchDist = dist;
+            applyTransform();
+        }
+    }, { passive: false });
+    treeCanvas.addEventListener('touchend', e => {
+        if (e.touches.length < 2) lastTouchDist = null;
+        if (e.touches.length === 0) isPanning = false;
+    }, { passive: true });
+
+    // Button controls
+    document.getElementById('btn-zoom-in').addEventListener('click', () => {
+        const cx = treeCanvas.clientWidth / 2, cy = treeCanvas.clientHeight / 2;
+        const newZoom = Math.min(MAX_ZOOM, zoom * 1.25);
+        panX = cx - (cx - panX) * (newZoom / zoom);
+        panY = cy - (cy - panY) * (newZoom / zoom);
+        zoom = newZoom;
+        applyTransform();
+    });
+    document.getElementById('btn-zoom-out').addEventListener('click', () => {
+        const cx = treeCanvas.clientWidth / 2, cy = treeCanvas.clientHeight / 2;
+        const newZoom = Math.max(MIN_ZOOM, zoom / 1.25);
+        panX = cx - (cx - panX) * (newZoom / zoom);
+        panY = cy - (cy - panY) * (newZoom / zoom);
+        zoom = newZoom;
+        applyTransform();
+    });
+    document.getElementById('btn-center').addEventListener('click', () => window.resetPanZoom());
 
     /* --- Is-alive toggle (shows/hides death date) ----- */
     const isAliveSwitch  = document.getElementById('is-alive');

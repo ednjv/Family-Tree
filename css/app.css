@@ -128,6 +128,10 @@ main { flex: 1 0 auto; }
 .css-tree-up li:first-child::after { border-radius: 0 0 0 5px; }
 .css-tree-up ul ul::before { content: ''; position: absolute; bottom: 0; left: 50%; border-left: 2px solid #90a4ae; width: 0; height: 20px; margin-left: -1px; }
 
+/* Bridge line: connects the bottom junction of the ancestor tree to the root person
+   in #descendants-canvas across the margin-bottom: 20px gap between the two divs. */
+#ancestors-canvas > ul::before { content: ''; position: absolute; bottom: -20px; left: 50%; border-left: 2px solid #90a4ae; width: 0; height: 20px; margin-left: -1px; }
+
 /* --- Couple / Family Node --- */
 .family-node { display: flex; align-items: center; gap: 8px; justify-content: center; position: relative; }
 .spouse-connector { color: #b0bec5; font-size: 1.2rem; margin: 0 -4px; z-index: 1; background: white; border-radius: 50%; }

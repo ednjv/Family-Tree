@@ -102,26 +102,35 @@ main { flex: 1 0 auto; }
   border: 1px solid #cfd8dc;
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
   border-radius: 20px;
-  padding: 5px 12px;
+  height: 34px;
+  padding: 0 12px;
   display: flex;
   align-items: center;
   gap: 6px;
   color: #5D4037;
   transition: box-shadow 0.15s;
+  box-sizing: border-box;
 }
 .tree-float-ctrl:hover { box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
 .tree-float-ctrl.top-left    { top: 12px; left: 12px; }
 .tree-float-ctrl.top-right   { top: 12px; right: 12px; }
 .tree-float-ctrl.bottom-left { bottom: 12px; left: 12px; }
-.tree-float-ctrl > i { font-size: 1rem; flex-shrink: 0; }
+.tree-float-ctrl i { font-size: 1.1rem; flex-shrink: 0; line-height: 1; }
 .tree-float-ctrl select {
   border: none; outline: none; background: transparent;
   font-size: 0.8rem; color: #3e2723; cursor: pointer;
   padding: 0; height: auto; box-shadow: none;
 }
 /* Compact Materialize switch inside floating control */
-.tree-float-switch { display: flex; align-items: center; margin: 0; cursor: pointer; }
-.tree-float-switch .lever { margin: 0 0 0 4px !important; }
+.tree-float-switch {
+  display: flex; align-items: center; margin: 0; cursor: pointer;
+  height: 100%;
+}
+.tree-float-switch .lever {
+  margin: 0 0 0 4px !important;
+  top: 0 !important;
+  vertical-align: middle;
+}
 
 /* --- CSS Tree: Descendants (top-down) --- */
 .css-tree-down ul { padding-top: 20px; position: relative; display: flex; justify-content: center; padding-left: 0; margin: 0; }
@@ -175,9 +184,22 @@ main { flex: 1 0 auto; }
 .rpg-dead  { background-color: #eeeeee;  color: #757575;  border: 1px solid #e0e0e0; }
 .rpg-status i { font-size: 10px; }
 
-/* --- Card Controls (edit / focus buttons) --- */
-.card-controls { position: absolute; top: 4px; width: 100%; display: flex; justify-content: space-between; padding: 0 4px; box-sizing: border-box; }
-.card-controls i { cursor: pointer; color: #b0bec5; font-size: 1rem; transition: 0.2s; }
-.card-controls i:hover { color: #5D4037; }
+/* --- Card Controls (edit / focus icon buttons — MD icon button spec) --- */
+.card-controls {
+  position: absolute; top: 2px; width: 100%;
+  display: flex; justify-content: space-between;
+  padding: 0 2px; box-sizing: border-box;
+}
+.tree-card-btn {
+  width: 24px; height: 24px; border-radius: 50%;
+  border: none; background: transparent;
+  cursor: pointer; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: #b0bec5;
+  transition: background 0.15s, color 0.15s, transform 0.1s;
+}
+.tree-card-btn i { font-size: 0.95rem; pointer-events: none; }
+.tree-card-btn:hover  { background: #efebe9; color: #5D4037; }
+.tree-card-btn:active { transform: scale(0.88); }
 .focus-btn       { color: #ff9800 !important; }
-.focus-btn:hover { color: #e65100 !important; transform: scale(1.2); }
+.focus-btn:hover { background: #fff3e0 !important; color: #e65100 !important; }

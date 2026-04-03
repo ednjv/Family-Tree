@@ -6,8 +6,8 @@ Una aplicación web ligera para el registro, gestión y visualización de árbol
 
 - **Árbol bidireccional (hourglass):** visualiza ancestros hacia arriba y descendientes hacia abajo desde cualquier persona enfocada.
 - **Tarjetas RPG:** cada persona muestra avatar, nombre, y badge de estado (vivo/fallecido) con edad calculada automáticamente.
-- **Configuración en tiempo real:** controla las generaciones de ancestros/descendientes visibles y si se muestran cónyuges.
-- **Pan + Zoom interactivo:** arrastra el canvas, usa la rueda del ratón o pellizca para hacer zoom. Botones `+` / `−` y un botón de centrado (⊕) siempre visibles.
+- **Controles flotantes en el canvas:** botones `+` / `−` y centrado (⊕) en la esquina inferior derecha; generaciones de ancestros (↑) y descendientes (↓) en las esquinas superiores; toggle de cónyuges en la esquina inferior izquierda. Todos siguen el estándar Material Design.
+- **Pan + Zoom interactivo:** arrastra el canvas, usa la rueda del ratón o pellizca para hacer zoom.
 - **Import FTT / JSON:** importa archivos `.ftt` del formato heredado o `.json` exportados por la propia app.
 - **Export JSON:** descarga el árbol completo como JSON estándar.
 - **Persistencia local:** los datos viven en `localStorage` del navegador; sin servidor backend.

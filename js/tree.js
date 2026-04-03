@@ -17,10 +17,10 @@ function generateCardHTML(person, isRoot = false) {
     return `
 <div class="tree-card ${isRoot ? 'is-root' : ''}">
   <div class="card-controls">
-    <i class="material-icons edit-btn"  data-id="${person.id}" title="Editar">edit</i>
+    <button class="tree-card-btn edit-btn"  data-id="${person.id}" title="Editar"><i class="material-icons">edit</i></button>
     ${!isRoot
-        ? `<i class="material-icons focus-btn" data-id="${person.id}" title="Enfocar aquí">my_location</i>`
-        : '<i></i>'}
+        ? `<button class="tree-card-btn focus-btn" data-id="${person.id}" title="Enfocar aquí"><i class="material-icons">my_location</i></button>`
+        : '<span></span>'}
   </div>
   <div class="avatar" style="background-color:${bg};">${init}</div>
   <div class="name" title="${person.nombres} ${person.apellidos}">${person.nombres}<br>${person.apellidos}</div>

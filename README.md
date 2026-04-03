@@ -26,8 +26,7 @@ Family-Tree/
     │                   # queries (getPerson, getSpouses…) y calculateAge
     ├── tree.js         # Motor de renderizado: generateCardHTML, generateFamilyNode,
     │                   # buildAncestorsNode, buildDescendantsNode, renderTree
-    ├── ui.js           # Capa UI: loader, consola debug, updateUI, loadToForm,
-    │                   # attachCardEvents
+    ├── ui.js           # Capa UI: loader, updateUI, loadToForm, attachCardEvents
     ├── ftt.js          # Parser del formato .ftt heredado (parseFTT)
     └── app.js          # Bootstrap: DOMContentLoaded, init de Materialize,
                         # wiring de todos los event listeners, arranque inicial

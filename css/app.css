@@ -61,15 +61,6 @@ main { flex: 1 0 auto; }
 .dropdown-content li > a i { font-size: 1.25rem; flex-shrink: 0; }
 .dropdown-content li > a.red-text i { color: var(--color-error); }
 
-/* --- Debug Console --- */
-#debug-panel {
-  background-color: #212121; color: #69f0ae;
-  font-family: 'Courier New', monospace; height: 150px; overflow-y: auto;
-  padding: 10px; margin-top: 10px; border-radius: 4px; font-size: 0.85rem;
-}
-.debug-error { color: #ff5252; }
-.debug-warn  { color: #ffab40; }
-.debug-info  { color: #69f0ae; }
 
 /* --- Member List Cards (legacy, kept for potential reuse) --- */
 .member-card { position: relative; transition: transform 0.2s; }

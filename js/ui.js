@@ -16,15 +16,6 @@ function hideLoader() {
     document.getElementById('loader-overlay').style.display = 'none';
 }
 
-/* --- Debug console ------------------------------------ */
-
-function logDebug(msg, type = 'info') {
-    const panel = document.getElementById('debug-panel');
-    const css   = type === 'error' ? 'debug-error' : type === 'warn' ? 'debug-warn' : 'debug-info';
-    panel.innerHTML += `<p style="margin:2px 0"><span class="grey-text">[${new Date().toLocaleTimeString()}]</span> <span class="${css}">${msg}</span></p>`;
-    panel.scrollTop = panel.scrollHeight;
-}
-
 /* --- Form management ---------------------------------- */
 
 // Populates both forms (personal data + family links) for editing an existing person.

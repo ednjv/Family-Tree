@@ -94,14 +94,34 @@ main { flex: 1 0 auto; }
 .tree-ctrl-btn:active { transform: scale(0.92); }
 .tree-ctrl-btn i { font-size: 1.1rem; pointer-events: none; }
 
-/* Config bar above the tree */
-.tree-config-bar {
-  background: white; padding: 10px 15px; border-radius: 8px; margin-bottom: 15px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 15px;
+/* Floating tree config controls (ancestors / descendants / spouses) */
+.tree-float-ctrl {
+  position: absolute;
+  z-index: 20;
+  background: white;
+  border: 1px solid #cfd8dc;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  border-radius: 20px;
+  padding: 5px 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #5D4037;
+  transition: box-shadow 0.15s;
 }
-.config-group { display: flex; align-items: center; gap: 10px; }
-.config-group select { display: block; padding: 2px 5px; height: 30px; border-radius: 4px; border: 1px solid #ccc; font-size: 0.85rem; }
+.tree-float-ctrl:hover { box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+.tree-float-ctrl.top-left    { top: 12px; left: 12px; }
+.tree-float-ctrl.top-right   { top: 12px; right: 12px; }
+.tree-float-ctrl.bottom-left { bottom: 12px; left: 12px; }
+.tree-float-ctrl > i { font-size: 1rem; flex-shrink: 0; }
+.tree-float-ctrl select {
+  border: none; outline: none; background: transparent;
+  font-size: 0.8rem; color: #3e2723; cursor: pointer;
+  padding: 0; height: auto; box-shadow: none;
+}
+/* Compact Materialize switch inside floating control */
+.tree-float-switch { display: flex; align-items: center; margin: 0; }
+.tree-float-switch .lever { margin: 0 0 0 4px !important; }
 
 /* --- CSS Tree: Descendants (top-down) --- */
 .css-tree-down ul { padding-top: 20px; position: relative; display: flex; justify-content: center; padding-left: 0; margin: 0; }

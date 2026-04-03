@@ -106,34 +106,6 @@
       <div class="card">
         <div class="card-content" style="padding-bottom:0; padding-top:10px;">
 
-          <!-- Tree config bar -->
-          <div class="tree-config-bar">
-            <div class="config-group">
-              <span class="grey-text text-darken-2" style="font-size:0.85rem;"><i class="material-icons tiny">arrow_upward</i> Ancestros:</span>
-              <select id="config-anc" class="browser-default">
-                <option value="1">1 Generación</option>
-                <option value="2">2 Generaciones</option>
-                <option value="3">3 Generaciones</option>
-                <option value="4">4 Generaciones</option>
-                <option value="999">Ilimitado</option>
-              </select>
-            </div>
-            <div class="config-group">
-              <span class="grey-text text-darken-2" style="font-size:0.85rem;"><i class="material-icons tiny">arrow_downward</i> Descendencia:</span>
-              <select id="config-desc" class="browser-default">
-                <option value="1">Hijos</option>
-                <option value="2">Nietos</option>
-                <option value="3">Bisnietos</option>
-                <option value="999">Ilimitado</option>
-              </select>
-            </div>
-            <div class="switch">
-              <label style="font-size:0.8rem; color:#5D4037; font-weight:500;">
-                Cónyuges <input type="checkbox" id="config-spouses"><span class="lever"></span>
-              </label>
-            </div>
-          </div>
-
           <!-- Tree placeholder (empty state) -->
           <div class="center-align" id="tree-placeholder" style="padding:40px 0;">
             <i class="material-icons grey-text" style="font-size:4rem;">account_tree</i>
@@ -147,11 +119,38 @@
               <div id="ancestors-canvas"   class="css-tree-up"></div>
               <div id="descendants-canvas" class="css-tree-down"></div>
             </div>
-            <!-- Canvas controls (zoom + center) -->
+            <!-- Canvas controls (zoom + center) — bottom-right -->
             <div class="tree-canvas-controls">
               <button class="tree-ctrl-btn" id="btn-zoom-in"  title="Acercar"><i class="material-icons">add</i></button>
               <button class="tree-ctrl-btn" id="btn-zoom-out" title="Alejar"><i class="material-icons">remove</i></button>
               <button class="tree-ctrl-btn" id="btn-center"   title="Centrar en persona enfocada"><i class="material-icons">filter_center_focus</i></button>
+            </div>
+            <!-- Tree view config — floating controls -->
+            <div class="tree-float-ctrl top-left" title="Generaciones de ancestros">
+              <i class="material-icons">arrow_upward</i>
+              <select id="config-anc" class="browser-default">
+                <option value="1">1 Gen.</option>
+                <option value="2">2 Gen.</option>
+                <option value="3">3 Gen.</option>
+                <option value="4">4 Gen.</option>
+                <option value="999">∞ Gen.</option>
+              </select>
+            </div>
+            <div class="tree-float-ctrl top-right" title="Generaciones de descendencia">
+              <i class="material-icons">arrow_downward</i>
+              <select id="config-desc" class="browser-default">
+                <option value="1">Hijos</option>
+                <option value="2">Nietos</option>
+                <option value="3">Bisnietos</option>
+                <option value="999">∞ Gen.</option>
+              </select>
+            </div>
+            <div class="tree-float-ctrl bottom-left" title="Mostrar cónyuges">
+              <i class="material-icons">favorite</i>
+              <label class="tree-float-switch">
+                <input type="checkbox" id="config-spouses">
+                <span class="lever"></span>
+              </label>
             </div>
           </div>
 

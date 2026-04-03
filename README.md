@@ -90,6 +90,23 @@ El parser en `ftt.js` entiende el formato tab-delimitado propietario (no es GEDC
 | **Individual** | `cols.length >= 20` | `[0]` id, `[2]` familyOfOrigin, `[12]` apellidos, `[13]` nombres, `[16]` birth flag, `[17]` año nac., `[18]` mes nac., `[19]` día nac., `[20]` death flag, `[21]` año def., `[22]` mes def., `[23]` día def., `[24]` sexo (1=M, 2=F) |
 | **Familia** | `5 < cols.length < 20` | `[0]` famId, `[2]` parent1Id, `[4]` parent2Id |
 
+## Sistema de diseño
+
+La app sigue **Material Design** usando Materialize CSS v1.0.0 como base. Los tokens de color están definidos como CSS custom properties en `css/app.css`.
+
+| Token | Valor | Rol MD |
+|---|---|---|
+| `--color-primary` | `#5D4037` Brown 700 | Acciones primarias, app bar |
+| `--color-primary-dark` | `#3e2723` Brown 900 | Texto sobre fondos claros |
+| `--color-primary-light` | `#efebe9` Brown 50 | Superficies hover |
+| `--color-on-primary` | `#ffffff` | Texto/íconos sobre primary |
+| `--color-outline` | `#cfd8dc` Blue Grey 100 | Bordes de cards y botones |
+| `--color-outline-mid` | `#90a4ae` Blue Grey 300 | Conectores del árbol |
+| `--color-neutral` | `#b0bec5` Blue Grey 200 | Íconos inactivos |
+| `--color-error` | `#c62828` Red 800 | Acciones destructivas |
+
+Los colores de estado de persona (verde vivo / gris fallecido) son semánticos y siguen la convención GEDCOM, no son colores de marca.
+
 ## Dependencias externas (CDN)
 
 - [Materialize CSS v1.0.0](https://materializecss.com/) — sistema de diseño y componentes

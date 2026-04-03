@@ -89,7 +89,6 @@ main { flex: 1 0 auto; }
   padding: 20px;
   text-align: center;
   transform-origin: 0 0;
-  will-change: transform;
   user-select: none;
 }
 

@@ -49,10 +49,12 @@ main { flex: 1 0 auto; }
 #loader-text { margin-top: 15px; font-weight: 500; color: var(--color-primary); font-size: 1.2rem; }
 
 /* --- Dropdown menu (app bar) — MD list item with leading icon --- */
+#options-menu { min-width: 210px; }
 .dropdown-content li > a {
   display: flex !important;
   align-items: center;
   gap: 8px;
+  white-space: nowrap;
   font-size: 0.875rem;  /* MD Body Medium = 14sp */
   font-weight: 400;
 }

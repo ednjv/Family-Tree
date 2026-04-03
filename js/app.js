@@ -179,6 +179,10 @@ document.addEventListener('DOMContentLoaded', function () {
         M.FormSelect.init(selChild);
         M.FormSelect.init(selP1);
         M.FormSelect.init(selP2);
+        // Reset photo state
+        window._pendingPhotoDataUrl = undefined;
+        pendingRemovePhoto = false;
+        resetFormPhotoPreview();
     });
 
     /* --- Add / edit person form ----------------------- */
@@ -196,16 +200,29 @@ document.addEventListener('DOMContentLoaded', function () {
                 fechaDefuncion:  isAliveSwitch.checked ? null : document.getElementById('death-date').value
             };
 
+            let savedId = id;
             if (id) {
                 const idx = db.individuals.findIndex(i => i.id === id);
                 if (idx > -1) db.individuals[idx] = { ...db.individuals[idx], ...data };
             } else {
-                const newId = 'P' + Date.now();
-                db.individuals.push({ id: newId, familyOfOrigin: null, ...data });
-                if (!currentFocusId) currentFocusId = newId;
+                savedId = 'P' + Date.now();
+                db.individuals.push({ id: savedId, familyOfOrigin: null, ...data });
+                if (!currentFocusId) currentFocusId = savedId;
             }
 
             saveDB();
+
+            // Persist photo change (GEDCOM OBJE)
+            if (typeof window._pendingPhotoDataUrl !== 'undefined') {
+                if (window._pendingPhotoDataUrl) {
+                    setPhoto(savedId, window._pendingPhotoDataUrl);
+                } else if (pendingRemovePhoto) {
+                    removePhoto(savedId);
+                }
+                window._pendingPhotoDataUrl = undefined;
+                pendingRemovePhoto = false;
+            }
+
             updateUI();
             document.getElementById('btn-cancel-edit').click();
             hideLoader();
@@ -256,7 +273,18 @@ document.addEventListener('DOMContentLoaded', function () {
         reader.onload = function (ev) {
             setTimeout(() => {
                 if (file.name.endsWith('.json')) {
-                    try { db = JSON.parse(ev.target.result); saveDB(); updateUI(); } catch (_) {}
+                    try {
+                        const parsed = JSON.parse(ev.target.result);
+                        // Restore embedded photos if present
+                        if (parsed._photos && typeof parsed._photos === 'object') {
+                            photosDB = parsed._photos;
+                            savePhotosDB();
+                            delete parsed._photos;
+                        }
+                        db = parsed;
+                        saveDB();
+                        updateUI();
+                    } catch (_) {}
                 } else {
                     parseFTT(ev.target.result);
                 }
@@ -270,8 +298,12 @@ document.addEventListener('DOMContentLoaded', function () {
     /* --- Export --------------------------------------- */
     document.getElementById('btn-export').addEventListener('click', e => {
         e.preventDefault();
+        // Embed photos (_photos key) so the JSON is self-contained
+        const exportData = Object.keys(photosDB).length > 0
+            ? { ...db, _photos: photosDB }
+            : { ...db };
         const a    = document.createElement('a');
-        a.href     = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(db, null, 2));
+        a.href     = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(exportData, null, 2));
         a.download = 'family_tree.json';
         a.click();
     });
@@ -281,11 +313,219 @@ document.addEventListener('DOMContentLoaded', function () {
         e.preventDefault();
         if (!confirm('¿Borrar todo?')) return;
         db             = { individuals: [], families: [] };
+        photosDB       = {};
         currentFocusId = null;
         saveDB();
+        savePhotosDB();
         updateUI();
         document.getElementById('tree-canvas').style.display      = 'none';
         document.getElementById('tree-placeholder').style.display  = 'block';
+    });
+
+    /* =========================================================
+       Photo Upload + Crop (GEDCOM OBJE — 200×200 px JPEG)
+       ========================================================= */
+
+    let pendingRemovePhoto = false;
+    let cropImg = null;
+    let cropX = 0, cropY = 0, cropScale = 1;
+    let cropMinScale = 1, cropMaxScale = 4;
+    let cropDragging = false, cropDragStartX = 0, cropDragStartY = 0;
+    let cropModalInstance = null;
+    let cropLastTouchDist = null;
+
+    // Init Materialize modal
+    cropModalInstance = M.Modal.init(document.getElementById('modal-photo-crop'), {
+        dismissible: false
+    });
+
+    function resetFormPhotoPreview() {
+        const formPhotoImg     = document.getElementById('form-photo-img');
+        const formPhotoInitial = document.getElementById('form-photo-initial');
+        formPhotoImg.src               = '';
+        formPhotoImg.style.display     = 'none';
+        formPhotoInitial.style.display = 'flex';
+        formPhotoInitial.textContent   = '?';
+        document.getElementById('btn-remove-photo').style.display = 'none';
+    }
+
+    function renderCrop() {
+        if (!cropImg) return;
+        const canvas = document.getElementById('crop-canvas');
+        const ctx    = canvas.getContext('2d');
+        ctx.clearRect(0, 0, 200, 200);
+        ctx.drawImage(cropImg, cropX, cropY, cropImg.width * cropScale, cropImg.height * cropScale);
+        // Dim outside the circle
+        ctx.save();
+        ctx.fillStyle = 'rgba(0,0,0,0.45)';
+        ctx.beginPath();
+        ctx.rect(0, 0, 200, 200);
+        ctx.arc(100, 100, 97, 0, Math.PI * 2, true); // CCW arc = hole
+        ctx.fill();
+        ctx.restore();
+        // Circle border
+        ctx.strokeStyle = 'rgba(255,255,255,0.75)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(100, 100, 97, 0, Math.PI * 2);
+        ctx.stroke();
+    }
+
+    function setCropScale(newScale) {
+        newScale = Math.max(cropMinScale, Math.min(cropMaxScale, newScale));
+        // Keep canvas centre fixed in image space
+        const imgPtX = (100 - cropX) / cropScale;
+        const imgPtY = (100 - cropY) / cropScale;
+        cropScale = newScale;
+        cropX = 100 - imgPtX * cropScale;
+        cropY = 100 - imgPtY * cropScale;
+        renderCrop();
+    }
+
+    function openCropModal(imgSrc) {
+        const img = new Image();
+        img.onload = function () {
+            cropImg = img;
+            // Minimum scale fills the 200×200 box
+            cropMinScale = Math.max(200 / img.width, 200 / img.height);
+            cropMaxScale = cropMinScale * 5;
+            cropScale = cropMinScale;
+            cropX = (200 - img.width * cropScale) / 2;
+            cropY = (200 - img.height * cropScale) / 2;
+            document.getElementById('crop-zoom-slider').value = 0;
+            renderCrop();
+            cropModalInstance.open();
+        };
+        img.src = imgSrc;
+    }
+
+    // Canvas drag
+    const cropCanvas = document.getElementById('crop-canvas');
+    cropCanvas.addEventListener('mousedown', e => {
+        cropDragging = true;
+        cropDragStartX = e.offsetX - cropX;
+        cropDragStartY = e.offsetY - cropY;
+    });
+    cropCanvas.addEventListener('mousemove', e => {
+        if (!cropDragging) return;
+        cropX = e.offsetX - cropDragStartX;
+        cropY = e.offsetY - cropDragStartY;
+        renderCrop();
+    });
+    cropCanvas.addEventListener('mouseup',    () => { cropDragging = false; });
+    cropCanvas.addEventListener('mouseleave', () => { cropDragging = false; });
+
+    // Canvas wheel zoom
+    cropCanvas.addEventListener('wheel', e => {
+        e.preventDefault();
+        const factor   = e.deltaY < 0 ? 1.1 : 1 / 1.1;
+        const newScale = cropScale * factor;
+        const ratio    = Math.max(0, Math.min(100,
+            (newScale - cropMinScale) / (cropMaxScale - cropMinScale) * 100));
+        document.getElementById('crop-zoom-slider').value = Math.round(ratio);
+        setCropScale(newScale);
+    }, { passive: false });
+
+    // Canvas touch (single-finger drag + pinch zoom)
+    cropCanvas.addEventListener('touchstart', e => {
+        if (e.touches.length === 1) {
+            cropDragging = true;
+            const r = cropCanvas.getBoundingClientRect();
+            cropDragStartX = e.touches[0].clientX - r.left - cropX;
+            cropDragStartY = e.touches[0].clientY - r.top  - cropY;
+        } else if (e.touches.length === 2) {
+            cropDragging = false;
+            cropLastTouchDist = Math.hypot(
+                e.touches[0].clientX - e.touches[1].clientX,
+                e.touches[0].clientY - e.touches[1].clientY
+            );
+        }
+    }, { passive: true });
+    cropCanvas.addEventListener('touchmove', e => {
+        e.preventDefault();
+        if (e.touches.length === 1 && cropDragging) {
+            const r = cropCanvas.getBoundingClientRect();
+            cropX = e.touches[0].clientX - r.left - cropDragStartX;
+            cropY = e.touches[0].clientY - r.top  - cropDragStartY;
+            renderCrop();
+        } else if (e.touches.length === 2 && cropLastTouchDist) {
+            const dist = Math.hypot(
+                e.touches[0].clientX - e.touches[1].clientX,
+                e.touches[0].clientY - e.touches[1].clientY
+            );
+            const newScale = cropScale * (dist / cropLastTouchDist);
+            cropLastTouchDist = dist;
+            const ratio = Math.max(0, Math.min(100,
+                (newScale - cropMinScale) / (cropMaxScale - cropMinScale) * 100));
+            document.getElementById('crop-zoom-slider').value = Math.round(ratio);
+            setCropScale(newScale);
+        }
+    }, { passive: false });
+    cropCanvas.addEventListener('touchend', e => {
+        if (e.touches.length < 2) cropLastTouchDist = null;
+        if (e.touches.length === 0) cropDragging = false;
+    }, { passive: true });
+
+    // Zoom slider
+    document.getElementById('crop-zoom-slider').addEventListener('input', function () {
+        const newScale = cropMinScale + (cropMaxScale - cropMinScale) * (this.value / 100);
+        setCropScale(newScale);
+    });
+
+    // Save crop → store as pending, update form preview
+    document.getElementById('btn-save-crop').addEventListener('click', function () {
+        const out = document.createElement('canvas');
+        out.width = 200; out.height = 200;
+        out.getContext('2d').drawImage(
+            cropImg, cropX, cropY, cropImg.width * cropScale, cropImg.height * cropScale
+        );
+        const dataUrl = out.toDataURL('image/jpeg', 0.85);
+        window._pendingPhotoDataUrl = dataUrl;
+        pendingRemovePhoto = false;
+
+        const formPhotoImg     = document.getElementById('form-photo-img');
+        const formPhotoInitial = document.getElementById('form-photo-initial');
+        formPhotoImg.src               = dataUrl;
+        formPhotoImg.style.display     = 'block';
+        formPhotoInitial.style.display = 'none';
+        document.getElementById('btn-remove-photo').style.display = 'inline-flex';
+
+        cropModalInstance.close();
+    });
+
+    // Upload button → open file picker
+    document.getElementById('btn-upload-photo').addEventListener('click', function () {
+        document.getElementById('photo-file-input').click();
+    });
+
+    // File selected → load into crop modal
+    document.getElementById('photo-file-input').addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = ev => openCropModal(ev.target.result);
+        reader.readAsDataURL(file);
+        e.target.value = '';
+    });
+
+    // Remove photo button
+    document.getElementById('btn-remove-photo').addEventListener('click', function () {
+        pendingRemovePhoto = true;
+        window._pendingPhotoDataUrl = null;
+        const firstNames = document.getElementById('first-names').value;
+        document.getElementById('form-photo-img').style.display     = 'none';
+        document.getElementById('form-photo-initial').style.display = 'flex';
+        document.getElementById('form-photo-initial').textContent   =
+            firstNames ? firstNames.charAt(0).toUpperCase() : '?';
+        this.style.display = 'none';
+    });
+
+    // Keep photo initial in sync with first-names while typing
+    document.getElementById('first-names').addEventListener('input', function () {
+        if (document.getElementById('form-photo-img').style.display === 'none') {
+            document.getElementById('form-photo-initial').textContent =
+                this.value ? this.value.charAt(0).toUpperCase() : '?';
+        }
     });
 
     /* --- Initial render ------------------------------- */

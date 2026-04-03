@@ -43,6 +43,19 @@ function getSpouses(id) {
     return spouses.filter(Boolean);
 }
 
+/* photos store (GEDCOM OBJE — 200×200 px JPEG) --------- */
+let photosDB = JSON.parse(localStorage.getItem('familyTreePhotos')) || {};
+
+function savePhotosDB() {
+    localStorage.setItem('familyTreePhotos', JSON.stringify(photosDB));
+}
+
+function getPhoto(id) { return photosDB[id] || null; }
+
+function setPhoto(id, dataUrl) { photosDB[id] = dataUrl; savePhotosDB(); }
+
+function removePhoto(id) { delete photosDB[id]; savePhotosDB(); }
+
 /* domain logic ----------------------------------------- */
 function calculateAge(birth, death, isAlive) {
     if (!birth) return '?';

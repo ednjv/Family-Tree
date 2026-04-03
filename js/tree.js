@@ -13,6 +13,10 @@ function generateCardHTML(person, isRoot = false) {
     const statusIcon  = person.vivo !== false ? 'favorite' : 'sentiment_very_dissatisfied';
     const init        = person.nombres ? person.nombres.charAt(0).toUpperCase() : '?';
     const bg          = person.vivo !== false ? '#4CAF50' : '#9e9e9e';
+    const photo       = getPhoto(person.id);
+    const avatarHtml  = photo
+        ? `<img class="avatar avatar-photo" src="${photo}" alt="${init}">`
+        : `<div class="avatar" style="background-color:${bg};">${init}</div>`;
 
     return `
 <div class="tree-card ${isRoot ? 'is-root' : ''}">
@@ -22,7 +26,7 @@ function generateCardHTML(person, isRoot = false) {
         ? `<button class="tree-card-btn focus-btn" data-id="${person.id}" title="Enfocar aquí"><i class="material-icons">my_location</i></button>`
         : '<span></span>'}
   </div>
-  <div class="avatar" style="background-color:${bg};">${init}</div>
+  ${avatarHtml}
   <div class="name" title="${person.nombres} ${person.apellidos}">${person.nombres}<br>${person.apellidos}</div>
   <div class="rpg-status ${statusClass}"><i class="material-icons">${statusIcon}</i> ${age} años</div>
 </div>`;

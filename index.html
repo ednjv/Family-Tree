@@ -61,6 +61,22 @@
           <span class="card-title" id="form-title">Registrar Persona</span>
           <form id="family-form">
             <input type="hidden" id="member-id">
+
+            <!-- Photo upload (GEDCOM OBJE — 200×200 px) -->
+            <div class="photo-upload-row">
+              <div class="photo-thumb" id="photo-thumb">
+                <span class="photo-initial" id="form-photo-initial">?</span>
+                <img id="form-photo-img" class="photo-thumb-img" src="" alt="Foto" style="display:none;">
+                <div class="photo-thumb-overlay" id="btn-upload-photo" title="Subir foto (OBJE)">
+                  <i class="material-icons">add_a_photo</i>
+                </div>
+              </div>
+              <button type="button" class="btn-flat photo-remove-btn" id="btn-remove-photo" style="display:none;" title="Quitar foto">
+                <i class="material-icons tiny">close</i> Quitar foto
+              </button>
+              <input type="file" id="photo-file-input" accept="image/*" style="display:none;">
+            </div>
+
             <div class="input-field"><input id="first-names" type="text" required><label for="first-names">Nombres</label></div>
             <div class="input-field"><input id="last-names"  type="text" required><label for="last-names">Apellidos</label></div>
             <div class="input-field">
@@ -160,6 +176,26 @@
     </div><!-- /col right -->
   </div><!-- /row -->
 </main>
+
+<!-- Photo crop modal (GEDCOM OBJE — 200×200 px square JPEG) -->
+<div id="modal-photo-crop" class="modal photo-crop-modal">
+  <div class="modal-content">
+    <h5>Foto de Perfil <span class="grey-text">· OBJE (GEDCOM)</span></h5>
+    <p class="grey-text">Arrastra para reposicionar · Rueda o desliza para ampliar · 200×200 px</p>
+    <div class="crop-stage" id="crop-stage">
+      <canvas id="crop-canvas" width="200" height="200"></canvas>
+    </div>
+    <div class="crop-zoom-row">
+      <i class="material-icons">zoom_out</i>
+      <input type="range" id="crop-zoom-slider" class="crop-zoom-slider" min="0" max="100" value="0">
+      <i class="material-icons">zoom_in</i>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <a href="#!" class="modal-close waves-effect btn-flat grey-text">Cancelar</a>
+    <a href="#!" id="btn-save-crop" class="waves-effect btn btn-primary">Aplicar</a>
+  </div>
+</div>
 
 <!-- ===== Scripts ===== -->
 <!-- Materialize JS -->

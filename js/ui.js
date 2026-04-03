@@ -41,6 +41,24 @@ function loadToForm(id) {
     M.updateTextFields();
     M.FormSelect.init(document.getElementById('person-sex'));
 
+    // Load photo preview (GEDCOM OBJE)
+    const existingPhoto    = getPhoto(p.id);
+    const formPhotoImg     = document.getElementById('form-photo-img');
+    const formPhotoInitial = document.getElementById('form-photo-initial');
+    if (existingPhoto) {
+        formPhotoImg.src            = existingPhoto;
+        formPhotoImg.style.display  = 'block';
+        formPhotoInitial.style.display = 'none';
+        document.getElementById('btn-remove-photo').style.display = 'inline-flex';
+    } else {
+        formPhotoImg.src               = '';
+        formPhotoImg.style.display     = 'none';
+        formPhotoInitial.style.display = 'flex';
+        formPhotoInitial.textContent   = p.nombres ? p.nombres.charAt(0).toUpperCase() : '?';
+        document.getElementById('btn-remove-photo').style.display = 'none';
+    }
+    window._pendingPhotoDataUrl = undefined;
+
     // --- Family links form (pre-select child + parents from familyOfOrigin) ---
     const selChild = document.getElementById('select-child');
     const selP1    = document.getElementById('select-parent1');

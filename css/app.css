@@ -233,3 +233,109 @@ main { flex: 1 0 auto; }
 /* Focus/navigate button — filled primary on hover for clear affordance */
 .focus-btn       { color: var(--color-primary) !important; }
 .focus-btn:hover { background: var(--color-primary) !important; color: var(--color-on-primary) !important; }
+
+/* --- Photo avatar (GEDCOM OBJE) in tree card --- */
+img.avatar-photo { object-fit: cover; padding: 0; }
+
+/* --- Photo Upload row (form sidebar) --- */
+.photo-upload-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.photo-thumb {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  border: 2px dashed var(--color-primary-mid);
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--color-primary-light);
+  transition: border-color 0.2s;
+}
+.photo-thumb:hover { border-color: var(--color-primary); }
+.photo-initial {
+  font-size: 1.8rem; font-weight: bold;
+  color: var(--color-primary);
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; height: 100%;
+  pointer-events: none;
+}
+.photo-thumb-img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.photo-thumb-overlay {
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  background: rgba(0,0,0,0);
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+  color: transparent;
+}
+.photo-thumb:hover .photo-thumb-overlay {
+  background: rgba(0,0,0,0.35);
+  color: #fff;
+}
+.photo-remove-btn {
+  font-size: 0.75rem !important;
+  color: var(--color-error) !important;
+  padding: 0 8px !important;
+  height: 24px !important;
+  line-height: 24px !important;
+  display: inline-flex !important;
+  align-items: center;
+  gap: 4px;
+}
+
+/* --- Photo Crop Modal --- */
+.photo-crop-modal .modal-content { text-align: center; }
+.photo-crop-modal h5 { font-size: 1rem; margin: 0 0 4px; color: var(--color-primary-dark); }
+.photo-crop-modal p  { font-size: 0.8rem; margin: 0 0 14px; }
+.crop-stage {
+  display: inline-block;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 2px 14px rgba(0,0,0,0.25);
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+.crop-stage:active { cursor: grabbing; }
+#crop-canvas { display: block; }
+.crop-zoom-row {
+  display: flex; align-items: center; gap: 10px;
+  margin: 14px auto 0;
+  max-width: 260px;
+}
+.crop-zoom-row i { color: var(--color-primary); }
+.crop-zoom-slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--color-primary-mid);
+  outline: none;
+  cursor: pointer;
+}
+.crop-zoom-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  cursor: pointer;
+}
+.crop-zoom-slider::-moz-range-thumb {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  cursor: pointer;
+  border: none;
+}

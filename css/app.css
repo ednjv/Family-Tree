@@ -121,15 +121,16 @@ main { flex: 1 0 auto; }
   font-size: 0.8rem; color: #3e2723; cursor: pointer;
   padding: 0; height: auto; box-shadow: none;
 }
-/* Compact Materialize switch inside floating control */
-.tree-float-switch {
-  display: flex; align-items: center; margin: 0; cursor: pointer;
-  height: 100%;
+/* Spouse toggle — MD "selected icon button" state */
+.tree-float-ctrl.bottom-left { cursor: pointer; }
+.tree-float-ctrl.bottom-left.ctrl-active {
+  background: #5D4037;
+  border-color: #5D4037;
+  color: white;
+  box-shadow: 0 2px 8px rgba(93,64,55,0.35);
 }
-.tree-float-switch .lever {
-  margin: 0 0 0 4px !important;
-  top: 0 !important;
-  vertical-align: middle;
+.tree-float-ctrl.bottom-left.ctrl-active:hover {
+  box-shadow: 0 4px 12px rgba(93,64,55,0.45);
 }
 
 /* --- CSS Tree: Descendants (top-down) --- */

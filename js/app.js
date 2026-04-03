@@ -21,7 +21,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.getElementById('config-anc').addEventListener('change', saveTreeConfig);
     document.getElementById('config-desc').addEventListener('change', saveTreeConfig);
-    document.getElementById('config-spouses').addEventListener('change', saveTreeConfig);
+
+    // Spouse toggle: pill acts as selected icon button (MD3 pattern)
+    const spousesBtn = document.getElementById('btn-toggle-spouses');
+    const spousesCb  = document.getElementById('config-spouses');
+    function syncSpousesBtn() {
+        spousesBtn.classList.toggle('ctrl-active', spousesCb.checked);
+    }
+    syncSpousesBtn();
+    spousesBtn.addEventListener('click', function () {
+        spousesCb.checked = !spousesCb.checked;
+        syncSpousesBtn();
+        saveTreeConfig();
+    });
+    spousesCb.addEventListener('change', function () {
+        syncSpousesBtn();
+        saveTreeConfig();
+    });
 
     /* --- Pan + Zoom on the tree canvas ---------------- */
     const treeCanvas = document.getElementById('tree-canvas');
